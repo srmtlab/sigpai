@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パーソナルAI研究会 (SIG-PAI) - 人工知能学会</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #005CAF;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        nav {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+        }
+        nav a:hover {
+            color: #005CAF;
+        }
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        section {
+            margin-bottom: 3rem;
+        }
+        h2 {
+            color: #005CAF;
+            border-bottom: 2px solid #005CAF;
+            padding-bottom: 0.5rem;
+        }
+        .member-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .member-item {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        .highlight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #005CAF;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .vision-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .vision-item {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>パーソナルAI研究会 (SIG-PAI)</h1>
+        <p>人工知能学会 第二種研究会</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#vision">設立趣旨</a></li>
+            <li><a href="#about">概要</a></li>
+            <li><a href="#purpose">目的</a></li>
+            <li><a href="#activities">活動計画</a></li>
+            <li><a href="#members">メンバー</a></li>
+            <li><a href="#contact">お問い合わせ</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="vision">
+            <h2>設立趣旨</h2>
+            <div class="highlight-box">
+                <p>大規模言語モデル（LLM）の急速な発展により、AIと人間のインタラクションは新たな段階を迎えています。この技術革新の中で、個人に寄り添い、その人固有のニーズに応えるパーソナルAI（PAI）の重要性が増していくと考えられます。</p>
+            </div>
+
+            <div class="vision-grid">
+                <div class="vision-item">
+                    <h3>PAIの特徴と可能性</h3>
+                    <p>PAIは小規模なLLMを用いて実現可能であり、人間とのマルチモーダル対話を通じて適切なサービスを仲介します。これにより、デジタルデバイドを解消し、様々なサービスの利用を大幅に促進することが期待されます。今後10年での普及が予想される中、その市場は巨大な可能性を秘めています。</p>
+                </div>
+
+                <div class="vision-item">
+                    <h3>データ活用とガバナンス</h3>
+                    <p>利用者のパーソナルデータ（PD）を個人の手元に集約・蓄積することで、PAIはそのデータを最大限に活用し、大きな価値を生み出すことができます。一方で、この過程で生じるリスクに対応するため、適正なガバナンスの確立が不可欠です。</p>
+                </div>
+
+                <div class="vision-item">
+                    <h3>社会的インパクト</h3>
+                    <p>適切にガバナンスされたPAIがサービスのゲートキーパーとなることで、人間の認知バイアスを利用したサービスの抑制が可能となり、注意経済と監視資本主義からの脱却が期待されます。この実現には、ガバナンスの仕組みの国際標準化が重要な課題となります。</p>
+                </div>
+
+                <div class="vision-item">
+                    <h3>新しい協働の形</h3>
+                    <p>PAIとの対話を通じた文書作成では、ラベル付有向グラフの形での共同作成が想定されます。これは人間の批判的思考力を高め、AIにとっても扱いやすい形式となることが期待されます。本研究会では、一般市民も参加可能なグラフ文書作成ワークショップなども計画しています。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>概要</h2>
+            <p>SIG-PAI（パーソナルAI研究会）は、人工知能学会の第二種研究会として2024年に設立されました。パーソナルAI (PAI)を適正なガバナンスの下で普及させることを目指し、活動を行っています。</p>
+        </section>
+
+        <section id="purpose">
+            <h2>研究会の目的</h2>
+            <p>パーソナルAI (PAI)とは、特定個人に専属し人間とのマルチモーダル対話に応じて適切なサービスを仲介(選定・実行)するAIです。本研究会では以下の活動を行います：</p>
+            <ul>
+                <li>PAIの利用者インタフェースの研究</li>
+                <li>サービスに関する調査研究</li>
+                <li>ガバナンスの検討と提案</li>
+                <li>一般市民参加型のワークショップの開催</li>
+            </ul>
+        </section>
+
+        <section id="activities">
+            <h2>活動計画</h2>
+            <p>年2回程度の研究会を開催予定です：</p>
+            <ul>
+                <li>定期研究会</li>
+                <li>全国大会でのオーガナイズドセッション</li>
+            </ul>
+        </section>
+
+        <section id="members">
+            <h2>運営組織</h2>
+            <div class="member-list">
+                <div class="member-item">
+                    <h3>主査</h3>
+                    <p>橋田 浩一（理化学研究所）</p>
+                </div>
+                <div class="member-item">
+                    <h3>主幹事</h3>
+                    <p>白松 俊（名古屋工業大学）</p>
+                </div>
+                <div class="member-item">
+                    <h3>幹事</h3>
+                    <p>門倉 悠真（東芝）</p>
+                    <p>松原 勇介（理化学研究所）</p>
+                    <p>谷沢 智史（東京大学）</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>お問い合わせ</h2>
+            <p>研究会に関するお問い合わせは、以下の連絡先までお願いいたします：</p>
+            <p>設立責任者：橋田 浩一<br>
+            所属：理化学研究所 革新知能統合研究センター<br>
+            E-mail：koiti.hasida@riken.jp</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 パーソナルAI研究会 (SIG-PAI) - 人工知能学会</p>
+    </footer>
+</body>
+</html>
