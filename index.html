@@ -52,6 +52,13 @@
             border-bottom: 2px solid #005CAF;
             padding-bottom: 0.5rem;
         }
+        .highlight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #005CAF;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 4px 4px 0;
+        }
         .member-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -62,24 +69,40 @@
             padding: 1rem;
             border-radius: 4px;
         }
-        .highlight-box {
+        .announcement {
             background-color: #f8f9fa;
-            border-left: 4px solid #005CAF;
+            border: 2px solid #005CAF;
+            border-radius: 8px;
             padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-radius: 0 4px 4px 0;
+            margin: 2rem 0;
+            position: relative;
         }
-        .vision-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        .vision-item {
-            background-color: #fff;
-            padding: 1.5rem;
+        .announcement-label {
+            background-color: #005CAF;
+            color: white;
+            padding: 0.5rem 1rem;
             border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        .event-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 4px;
+        }
+        .event-details dl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem 1rem;
+            margin: 0;
+        }
+        .event-details dt {
+            font-weight: bold;
+            color: #005CAF;
+        }
+        .event-details dd {
+            margin: 0;
         }
         footer {
             background-color: #333;
@@ -98,6 +121,7 @@
 
     <nav>
         <ul>
+            <li><a href="#announcement">開催案内</a></li>
             <li><a href="#vision">設立趣旨</a></li>
             <li><a href="#about">概要</a></li>
             <li><a href="#purpose">目的</a></li>
@@ -108,12 +132,37 @@
     </nav>
 
     <main>
+        <section id="announcement">
+            <div class="announcement">
+                <span class="announcement-label">開催案内</span>
+                <h2>第1回 パーソナルAI研究会</h2>
+                
+                <div class="event-details">
+                    <dl>
+                        <dt>日時</dt>
+                        <dd>2025年1月20日(月) 15:00～17:00</dd>
+                        
+                        <dt>開催形式</dt>
+                        <dd>オンライン開催</dd>
+                        
+                        <dt>参加費</dt>
+                        <dd>無料</dd>
+                        
+                        <dt>対象</dt>
+                        <dd>パーソナルAIに興味をお持ちの方どなたでも</dd>
+                    </dl>
+                    
+                    <p>※ 参加登録方法や発表募集など、詳細は近日公開予定です。</p>
+                </div>
+            </div>
+        </section>
+
         <section id="vision">
             <h2>設立趣旨</h2>
             <div class="highlight-box">
                 <p>大規模言語モデル（LLM）の急速な発展により、AIと人間のインタラクションは新たな段階を迎えています。この技術革新の中で、個人に寄り添うパーソナルAI（PAI）の重要性が増していくと考えられます。</p>
                 
-                <p>例えば、スマートフォンで動作するような小規模なLLMを用いて、特定個人に専属するAIが実現可能になり、人間とのマルチモーダル対話を通じて適切なサービスを仲介するようになります。利用者のパーソナルデータ（PD）を個人の手元に集約・蓄積することで、PAIはそのデータを最大限に活用し、大きな価値を生み出すことが期待されます。同時に、適正なガバナンスの確立により、人間の認知バイアスを利用したサービスを抑制し、注意経済と監視資本主義からの脱却を目指します。</p>
+                <p>PAIは小規模なLLMを用いて実現可能な、特定個人に専属するAIであり、人間とのマルチモーダル対話を通じて適切なサービスを仲介します。利用者のパーソナルデータ（PD）を個人の手元に集約・蓄積することで、PAIはそのデータを最大限に活用し、大きな価値を生み出すことが期待されます。同時に、適正なガバナンスの確立により、人間の認知バイアスを利用したサービスを抑制し、注意経済と監視資本主義からの脱却を目指します。</p>
 
                 <p>本研究会では、PAIの利用者インタフェース研究、ガバナンスの検討、および一般市民も参加可能なグラフ文書作成ワークショップなどを通じて、この新しい技術の健全な発展と普及に貢献していきます。</p>
             </div>
