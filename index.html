@@ -59,15 +59,12 @@
             margin: 1.5rem 0;
             border-radius: 0 4px 4px 0;
         }
-        .member-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
+        .member-list-simple h3 {
+            color: #005CAF;
+            margin: 1.5rem 0 0.5rem 0;
         }
-        .member-item {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 4px;
+        .member-list-simple p {
+            margin: 0 0 1rem 1rem;
         }
         .announcement {
             background-color: #f8f9fa;
@@ -180,21 +177,17 @@
 
         <section id="members">
             <h2>運営組織</h2>
-            <div class="member-list">
-                <div class="member-item">
-                    <h3>主査</h3>
-                    <p>橋田 浩一（理化学研究所）</p>
-                </div>
-                <div class="member-item">
-                    <h3>主幹事</h3>
-                    <p>白松 俊（名古屋工業大学）</p>
-                </div>
-                <div class="member-item">
-                    <h3>幹事</h3>
-                    <p>門倉 悠真（東芝）</p>
-                    <p>松原 勇介（理化学研究所）</p>
-                    <p>谷沢 智史（東京大学）</p>
-                </div>
+            <div class="member-list-simple">
+                <h3>主査</h3>
+                <p>橋田 浩一（理化学研究所）</p>
+
+                <h3>主幹事</h3>
+                <p>白松 俊（名古屋工業大学）</p>
+
+                <h3>幹事</h3>
+                <p>門倉 悠真（東芝）<br>
+                松原 勇介（理化学研究所）<br>
+                谷沢 智史（東京大学）</p>
             </div>
         </section>
 
