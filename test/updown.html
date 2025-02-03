@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>垂直変位推定（コンプリメンタリフィルタ＋静止判定版）</title>
+  <title>垂直変位推定（高精度ヒューリスティック版）</title>
   <style>
     body { font-family: sans-serif; margin: 2em; }
-    #log { margin-top: 1em; padding: 0.5em; background: #eee; max-height: 200px; overflow-y: auto; }
+    #log { margin-top: 1em; padding: 0.5em; background: #eee; max-height: 300px; overflow-y: auto; }
     button { padding: 0.5em 1em; font-size: 16px; }
   </style>
 </head>
 <body>
-  <h1>垂直変位推定（コンプリメンタリフィルタ＋静止判定版、閾値120ms）</h1>
+  <h1>垂直変位推定（高精度ヒューリスティック版）</h1>
   <p>縦方向の変位: <span id="displacement">0.00</span> m</p>
   <button id="startBtn">センサー開始</button>
   <div id="log"></div>
@@ -28,18 +28,21 @@
     let verticalDisplacement = 0;  // 垂直変位（m）
     let lastTime = null;           // 前回イベント時刻（ms）
 
-    // 高域通過フィルタ用変数
+    // 高域通過フィルタ用変数（加速度のノイズ軽減用）
     let filteredVerticalAcc = 0;
     const alphaFilter = 0.9;       // 加速度フィルタ係数（0～1、1に近いほど前回値重視）
 
-    // コンプリメンタリフィルタ（漏洩積分）用パラメータ
-    const velocityDecay = 0.98;    // 速度の漏洩率（0～1、1に近いほどドリフトを残す）
+    // 漏洩積分（コンプリメンタリフィルタ）のパラメータ
+    const velocityDecay = 0.98;    // 速度の漏洩率（0～1、1に近いほどドリフトが残る）
 
-    // 静止判定用パラメータ
-    const stationaryThreshold = 0.1; // m/s²以下なら「ほぼ動いていない」とみなす
-    const stationaryTimeRequired = 0.12; // 0.12秒以上継続すれば静止と判定
-    let stationaryTime = 0;        // 静止状態が継続している時間（秒）
+    // スライディングウィンドウによる加速度統計用
+    const slidingWindowDuration = 0.5; // 窓の長さ（秒）
+    let slidingWindow = [];             // { time, value } を蓄積
 
+    // 静止判定用のパラメータ
+    const accStdThreshold = 0.05;       // 窓内加速度の標準偏差がこれ未満なら加速度的に静止
+    const gyroThreshold = 1.0;          // 回転速度が1°/s未満なら回転的に静止（各軸）
+    
     // 現在のデバイスの向き（オイラー角：α, β, γ）
     let currentOrientation = { alpha: 0, beta: 0, gamma: 0 };
 
@@ -80,8 +83,37 @@
     }
 
     /**
+     * スライディングウィンドウに新たな加速度値を追加し、古い値を削除する
+     */
+    function updateSlidingWindow(time, value) {
+      slidingWindow.push({ time: time, value: value });
+      // ウィンドウ期間外のデータを削除
+      while (slidingWindow.length && (time - slidingWindow[0].time) > slidingWindowDuration * 1000) {
+        slidingWindow.shift();
+      }
+    }
+
+    /**
+     * スライディングウィンドウ内の標準偏差を計算する
+     */
+    function calcStdInWindow() {
+      if (slidingWindow.length === 0) return 0;
+      let sum = 0;
+      slidingWindow.forEach(item => sum += item.value);
+      const mean = sum / slidingWindow.length;
+      let variance = 0;
+      slidingWindow.forEach(item => {
+        const diff = item.value - mean;
+        variance += diff * diff;
+      });
+      variance /= slidingWindow.length;
+      return Math.sqrt(variance);
+    }
+
+    /**
      * 加速度センサーの値から垂直方向のネット加速度を求め、
-     * コンプリメンタリフィルタと静止判定による処理を実施し、速度・変位を更新するハンドラ  
+     * 複数のヒューリスティック（スライディングウィンドウ＋ジャイロチェック＋漏洩積分）により、
+     * 速度・変位を更新するハンドラ
      */
     function handleMotion(event) {
       // accelerationが取得できなければ、accelerationIncludingGravityを利用
@@ -107,8 +139,8 @@
       const aEarthZ = R[2][0] * ax + R[2][1] * ay + R[2][2] * az;
 
       // ネット加速度の算出
-      // ・もし event.acceleration が取得できていれば、重力は既に除かれているのでそのまま使用
-      // ・そうでなければ、加速度IncludingGravity から 9.81 m/s² を差し引く（※方向は端末の向きに依存）
+      // event.accelerationが存在すれば重力は除かれている前提
+      // なければ、加速度IncludingGravityから 9.81 m/s² を差し引く
       let netVerticalAcc;
       if (event.acceleration) {
         netVerticalAcc = aEarthZ;
@@ -116,24 +148,34 @@
         netVerticalAcc = aEarthZ - 9.81;
       }
 
-      // 高域通過フィルタにより、ノイズなどを軽減
+      // 高域通過フィルタでノイズ軽減
       filteredVerticalAcc = alphaFilter * filteredVerticalAcc + (1 - alphaFilter) * netVerticalAcc;
 
-      // ヒューリスティックな静止判定:
-      // ネット加速度がほぼ 0（閾値以下）の状態が継続していれば、静止とみなす
-      if (Math.abs(filteredVerticalAcc) < stationaryThreshold) {
-        stationaryTime += dt;
-      } else {
-        stationaryTime = 0;
+      // スライディングウィンドウに加速度を記録し、統計値を計算
+      updateSlidingWindow(currentTime, filteredVerticalAcc);
+      const windowStd = calcStdInWindow();
+
+      // ジャイロによる回転状態のチェック
+      let isGyroStationary = true;
+      if (event.rotationRate) {
+        // rotationRate: α, β, γ（deg/s）
+        const { alpha, beta, gamma } = event.rotationRate;
+        if (Math.abs(alpha) > gyroThreshold || Math.abs(beta) > gyroThreshold || Math.abs(gamma) > gyroThreshold) {
+          isGyroStationary = false;
+        }
       }
-      // 0.5秒以上静止状態なら、速度をリセット（ドリフト抑制）
-      if (stationaryTime >= stationaryTimeRequired) {
+      
+      // ヒューリスティックな静止判定:
+      // ・加速度の標準偏差が小さい（例：0.05 m/s²未満）かつ
+      // ・ジャイロがほぼ静止（各軸1°/s未満）
+      const isStationary = (windowStd < accStdThreshold) && isGyroStationary;
+      if (isStationary) {
         if (verticalVelocity !== 0) {
-          log('静止状態検出：' + stationaryTime.toFixed(2) + '秒継続 → 速度リセット');
+          log('静止状態検出（windowStd=' + windowStd.toFixed(3) + '）→ 速度リセット');
         }
         verticalVelocity = 0;
       } else {
-        // コンプリメンタリフィルタ（漏洩積分）による速度更新
+        // 漏洩積分による速度更新
         verticalVelocity = velocityDecay * (verticalVelocity + filteredVerticalAcc * dt);
       }
 
@@ -142,11 +184,11 @@
 
       // 結果を表示
       document.getElementById("displacement").innerText = verticalDisplacement.toFixed(2);
-      log('Motion: dt=' + dt.toFixed(3) +
-          ' s, netAcc=' + netVerticalAcc.toFixed(3) +
+      log('Motion: dt=' + dt.toFixed(3) + ' s, netAcc=' + netVerticalAcc.toFixed(3) +
           ' m/s², filteredAcc=' + filteredVerticalAcc.toFixed(3) +
-          ' m/s², v=' + verticalVelocity.toFixed(3) +
-          ' m/s, disp=' + verticalDisplacement.toFixed(3) + ' m, stationaryTime=' + stationaryTime.toFixed(3) + ' s');
+          ' m/s², stdWindow=' + windowStd.toFixed(3) +
+          ', v=' + verticalVelocity.toFixed(3) +
+          ' m/s, disp=' + verticalDisplacement.toFixed(3) + ' m');
     }
 
     // センサー開始処理（ユーザー操作必須）
