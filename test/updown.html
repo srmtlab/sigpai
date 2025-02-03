@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>垂直変位推定（デバッグ用）</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    #log { margin-top: 1em; padding: 0.5em; background: #eee; }
+    button { padding: 0.5em 1em; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>垂直変位推定（デバッグ用）</h1>
+  <p>縦方向の変位: <span id="displacement">0.00</span> m</p>
+  <button id="startBtn">センサー開始</button>
+  <div id="log"></div>
+  
+  <script>
+    function log(msg) {
+      console.log(msg);
+      document.getElementById('log').innerHTML += msg + '<br>';
+    }
+
+    // 積分用のグローバル変数
+    let verticalVelocity = 0;
+    let verticalDisplacement = 0;
+    let lastTime = null;
+
+    // 高域通過フィルタ用の変数
+    let filteredVerticalAcc = 0;
+    const alphaFilter = 0.9;
+
+    // デバイスの向き（オイラー角）
+    let currentOrientation = { alpha: 0, beta: 0, gamma: 0 };
+
+    function handleOrientation(event) {
+      currentOrientation.alpha = event.alpha ? event.alpha * Math.PI / 180 : 0;
+      currentOrientation.beta  = event.beta  ? event.beta  * Math.PI / 180 : 0;
+      currentOrientation.gamma = event.gamma ? event.gamma * Math.PI / 180 : 0;
+      log('Orientation: α=' + event.alpha + ', β=' + event.beta + ', γ=' + event.gamma);
+    }
+
+    function getRotationMatrix(alpha, beta, gamma) {
+      const cA = Math.cos(alpha), sA = Math.sin(alpha);
+      const cB = Math.cos(beta),  sB = Math.sin(beta);
+      const cG = Math.cos(gamma), sG = Math.sin(gamma);
+      const r11 = cA * cG - sA * sB * sG;
+      const r12 = -cB * sA;
+      const r13 = cA * sG + cG * sA * sB;
+      const r21 = cG * sA + cA * sB * sG;
+      const r22 = cA * cB;
+      const r23 = sA * sG - cA * cG * sB;
+      const r31 = -cB * sG;
+      const r32 = sB;
+      const r33 = cB * cG;
+      return [
+        [r11, r12, r13],
+        [r21, r22, r23],
+        [r31, r32, r33]
+      ];
+    }
+
+    function handleMotion(event) {
+      const acc = event.acceleration || event.accelerationIncludingGravity;
+      if (!acc || acc.x === null) {
+        log('加速度データが取得できません。');
+        return;
+      }
+
+      const currentTime = event.timeStamp;
+      if (lastTime === null) {
+        lastTime = currentTime;
+        return;
+      }
+      const dt = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
+
+      const ax = acc.x, ay = acc.y, az = acc.z;
+      const R = getRotationMatrix(currentOrientation.alpha, currentOrientation.beta, currentOrientation.gamma);
+      const aEarthZ = R[2][0] * ax + R[2][1] * ay + R[2][2] * az;
+      const rawVerticalAcc = aEarthZ;
+
+      filteredVerticalAcc = alphaFilter * filteredVerticalAcc + (1 - alphaFilter) * rawVerticalAcc;
+      verticalVelocity += filteredVerticalAcc * dt;
+      verticalDisplacement += verticalVelocity * dt;
+
+      document.getElementById("displacement").innerText = verticalDisplacement.toFixed(2);
+      log('Motion event: dt=' + dt.toFixed(3) + 's, rawAcc=' + rawVerticalAcc.toFixed(3));
+    }
+
+    function startSensors() {
+      log('startSensors() が呼ばれました。');
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            log('requestPermissionの結果: ' + response);
+            if (response === 'granted') {
+              window.addEventListener('deviceorientation', handleOrientation);
+              window.addEventListener('devicemotion', handleMotion);
+              document.getElementById("startBtn").style.display = 'none';
+              log('センサーのイベントリスナーを登録しました。');
+            } else {
+              log('センサー利用の許可が得られませんでした。');
+              alert("センサー利用の許可が得られませんでした。");
+            }
+          })
+          .catch(error => {
+            log('許可リクエストでエラー発生: ' + error);
+          });
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation);
+        window.addEventListener('devicemotion', handleMotion);
+        document.getElementById("startBtn").style.display = 'none';
+        log('センサーのイベントリスナーを登録しました（requestPermission不要な環境）。');
+      }
+    }
+
+    document.getElementById("startBtn").addEventListener("click", startSensors);
+  </script>
+</body>
+</html>
