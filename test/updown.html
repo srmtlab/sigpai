@@ -3,48 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>垂直変位推定（デバッグ用）</title>
+  <title>垂直変位推定（コンプリメンタリフィルタ＋静止判定版）</title>
   <style>
     body { font-family: sans-serif; margin: 2em; }
-    #log { margin-top: 1em; padding: 0.5em; background: #eee; }
+    #log { margin-top: 1em; padding: 0.5em; background: #eee; max-height: 200px; overflow-y: auto; }
     button { padding: 0.5em 1em; font-size: 16px; }
   </style>
 </head>
 <body>
-  <h1>垂直変位推定（デバッグ用）</h1>
+  <h1>垂直変位推定（コンプリメンタリフィルタ＋静止判定版）</h1>
   <p>縦方向の変位: <span id="displacement">0.00</span> m</p>
   <button id="startBtn">センサー開始</button>
   <div id="log"></div>
   
   <script>
+    // ログ出力用関数（デバッグ用）
     function log(msg) {
       console.log(msg);
       document.getElementById('log').innerHTML += msg + '<br>';
     }
 
-    // 積分用のグローバル変数
-    let verticalVelocity = 0;
-    let verticalDisplacement = 0;
-    let lastTime = null;
+    // 積分用グローバル変数
+    let verticalVelocity = 0;      // 垂直速度（m/s）
+    let verticalDisplacement = 0;  // 垂直変位（m）
+    let lastTime = null;           // 前回イベント時刻（ms）
 
-    // 高域通過フィルタ用の変数
+    // 高域通過フィルタ用変数
     let filteredVerticalAcc = 0;
-    const alphaFilter = 0.9;
+    const alphaFilter = 0.9;       // 加速度フィルタ係数（0～1、1に近いほど前回値重視）
 
-    // デバイスの向き（オイラー角）
+    // コンプリメンタリフィルタ（漏洩積分）用パラメータ
+    const velocityDecay = 0.98;    // 速度の漏洩率（0～1、1に近いほどドリフトを残す）
+
+    // 静止判定用パラメータ
+    const stationaryThreshold = 0.1; // m/s²以下なら「ほぼ動いていない」とみなす
+    const stationaryTimeRequired = 0.5; // 0.5秒以上継続すれば静止と判定
+    let stationaryTime = 0;        // 静止状態が継続している時間（秒）
+
+    // 現在のデバイスの向き（オイラー角：α, β, γ）
     let currentOrientation = { alpha: 0, beta: 0, gamma: 0 };
 
+    /**
+     * デバイスの向きが変化したときのハンドラ  
+     * event.alpha, beta, gamma は度（°）で提供されるので、ラジアンに変換する
+     */
     function handleOrientation(event) {
       currentOrientation.alpha = event.alpha ? event.alpha * Math.PI / 180 : 0;
       currentOrientation.beta  = event.beta  ? event.beta  * Math.PI / 180 : 0;
       currentOrientation.gamma = event.gamma ? event.gamma * Math.PI / 180 : 0;
-      log('Orientation: α=' + event.alpha + ', β=' + event.beta + ', γ=' + event.gamma);
+      log('Orientation: α=' + event.alpha + '°, β=' + event.beta + '°, γ=' + event.gamma + '°');
     }
 
+    /**
+     * オイラー角から、デバイス座標 → 地球座標への回転行列を計算する  
+     * （W3C DeviceOrientation Event の定義に基づく一例）
+     */
     function getRotationMatrix(alpha, beta, gamma) {
       const cA = Math.cos(alpha), sA = Math.sin(alpha);
       const cB = Math.cos(beta),  sB = Math.sin(beta);
       const cG = Math.cos(gamma), sG = Math.sin(gamma);
+      // Z (alpha) → X (beta) → Y (gamma) の順に回転とみなす
       const r11 = cA * cG - sA * sB * sG;
       const r12 = -cB * sA;
       const r13 = cA * sG + cG * sA * sB;
@@ -61,9 +79,14 @@
       ];
     }
 
+    /**
+     * 加速度センサーの値から垂直方向のネット加速度を求め、
+     * コンプリメンタリフィルタと静止判定による処理を実施し、速度・変位を更新するハンドラ  
+     */
     function handleMotion(event) {
-      const acc = event.acceleration || event.accelerationIncludingGravity;
-      if (!acc || acc.x === null) {
+      // accelerationが取得できなければ、accelerationIncludingGravityを利用
+      const accSource = event.acceleration ? event.acceleration : event.accelerationIncludingGravity;
+      if (!accSource || accSource.x === null) {
         log('加速度データが取得できません。');
         return;
       }
@@ -73,22 +96,60 @@
         lastTime = currentTime;
         return;
       }
-      const dt = (currentTime - lastTime) / 1000;
+      const dt = (currentTime - lastTime) / 1000; // 経過時間（秒）
       lastTime = currentTime;
 
-      const ax = acc.x, ay = acc.y, az = acc.z;
-      const R = getRotationMatrix(currentOrientation.alpha, currentOrientation.beta, currentOrientation.gamma);
-      const aEarthZ = R[2][0] * ax + R[2][1] * ay + R[2][2] * az;
-      const rawVerticalAcc = aEarthZ;
+      const ax = accSource.x, ay = accSource.y, az = accSource.z;
 
-      filteredVerticalAcc = alphaFilter * filteredVerticalAcc + (1 - alphaFilter) * rawVerticalAcc;
-      verticalVelocity += filteredVerticalAcc * dt;
+      // 回転行列を利用して、デバイス座標の加速度を地球座標へ変換
+      const R = getRotationMatrix(currentOrientation.alpha, currentOrientation.beta, currentOrientation.gamma);
+      // 地球座標系での垂直方向（Z軸）の加速度
+      const aEarthZ = R[2][0] * ax + R[2][1] * ay + R[2][2] * az;
+
+      // ネット加速度の算出
+      // ・もし event.acceleration が取得できていれば、重力は既に除かれているのでそのまま使用
+      // ・そうでなければ、加速度IncludingGravity から 9.81 m/s² を差し引く（※方向は端末の向きに依存）
+      let netVerticalAcc;
+      if (event.acceleration) {
+        netVerticalAcc = aEarthZ;
+      } else {
+        netVerticalAcc = aEarthZ - 9.81;
+      }
+
+      // 高域通過フィルタにより、ノイズなどを軽減
+      filteredVerticalAcc = alphaFilter * filteredVerticalAcc + (1 - alphaFilter) * netVerticalAcc;
+
+      // ヒューリスティックな静止判定:
+      // ネット加速度がほぼ 0（閾値以下）の状態が継続していれば、静止とみなす
+      if (Math.abs(filteredVerticalAcc) < stationaryThreshold) {
+        stationaryTime += dt;
+      } else {
+        stationaryTime = 0;
+      }
+      // 0.5秒以上静止状態なら、速度をリセット（ドリフト抑制）
+      if (stationaryTime >= stationaryTimeRequired) {
+        if (verticalVelocity !== 0) {
+          log('静止状態検出：' + stationaryTime.toFixed(2) + '秒継続 → 速度リセット');
+        }
+        verticalVelocity = 0;
+      } else {
+        // コンプリメンタリフィルタ（漏洩積分）による速度更新
+        verticalVelocity = velocityDecay * (verticalVelocity + filteredVerticalAcc * dt);
+      }
+
+      // 速度から変位を更新
       verticalDisplacement += verticalVelocity * dt;
 
+      // 結果を表示
       document.getElementById("displacement").innerText = verticalDisplacement.toFixed(2);
-      log('Motion event: dt=' + dt.toFixed(3) + 's, rawAcc=' + rawVerticalAcc.toFixed(3));
+      log('Motion: dt=' + dt.toFixed(3) +
+          ' s, netAcc=' + netVerticalAcc.toFixed(3) +
+          ' m/s², filteredAcc=' + filteredVerticalAcc.toFixed(3) +
+          ' m/s², v=' + verticalVelocity.toFixed(3) +
+          ' m/s, disp=' + verticalDisplacement.toFixed(3) + ' m, stationaryTime=' + stationaryTime.toFixed(3) + ' s');
     }
 
+    // センサー開始処理（ユーザー操作必須）
     function startSensors() {
       log('startSensors() が呼ばれました。');
       if (typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -106,16 +167,17 @@
             }
           })
           .catch(error => {
-            log('許可リクエストでエラー発生: ' + error);
+            log('許可リクエストエラー: ' + error);
           });
       } else {
         window.addEventListener('deviceorientation', handleOrientation);
         window.addEventListener('devicemotion', handleMotion);
         document.getElementById("startBtn").style.display = 'none';
-        log('センサーのイベントリスナーを登録しました（requestPermission不要な環境）。');
+        log('センサーのイベントリスナーを登録しました。（requestPermission不要な環境）');
       }
     }
 
+    // 「センサー開始」ボタンのクリックイベント登録
     document.getElementById("startBtn").addEventListener("click", startSensors);
   </script>
 </body>
