@@ -11,7 +11,7 @@
   </style>
 </head>
 <body>
-  <h1>垂直変位推定（コンプリメンタリフィルタ＋静止判定版）</h1>
+  <h1>垂直変位推定（コンプリメンタリフィルタ＋静止判定版、閾値120ms）</h1>
   <p>縦方向の変位: <span id="displacement">0.00</span> m</p>
   <button id="startBtn">センサー開始</button>
   <div id="log"></div>
@@ -37,7 +37,7 @@
 
     // 静止判定用パラメータ
     const stationaryThreshold = 0.1; // m/s²以下なら「ほぼ動いていない」とみなす
-    const stationaryTimeRequired = 0.5; // 0.5秒以上継続すれば静止と判定
+    const stationaryTimeRequired = 0.12; // 0.12秒以上継続すれば静止と判定
     let stationaryTime = 0;        // 静止状態が継続している時間（秒）
 
     // 現在のデバイスの向き（オイラー角：α, β, γ）
