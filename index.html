@@ -101,6 +101,44 @@
         .event-details dd {
             margin: 0;
         }
+        .zoom-info {
+            background-color: #e7f3ff;
+            border: 1px solid #005CAF;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .zoom-info h4 {
+            color: #005CAF;
+            margin-top: 0;
+        }
+        .program-section {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .program-section h3 {
+            color: #005CAF;
+            margin-top: 0;
+        }
+        .program-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .program-table th,
+        .program-table td {
+            border: 1px solid #dee2e6;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .program-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #005CAF;
+        }
         .resources-list {
             list-style-type: disc;
             padding-left: 1.5rem;
@@ -124,9 +162,10 @@
         <p>人工知能学会 第二種研究会</p>
     </header>
 
-            <nav>
+    <nav>
         <ul>
             <li><a href="#announcement">開催案内</a></li>
+            <li><a href="#program">プログラム</a></li>
             <li><a href="#about">概要</a></li>
             <li><a href="#activities">活動計画</a></li>
             <li><a href="#resources">関連資料</a></li>
@@ -139,69 +178,124 @@
     <main>
         <section id="announcement">
             <div class="announcement">
-                <span class="announcement-label">CFP（発表募集）</span>
+                <span class="announcement-label">開催案内</span>
                 <h2>第2回 パーソナルAI研究会</h2>
-                
                 <div class="event-details">
-                    <h3 style="color: #005CAF; margin-top: 0;">パーソナルAIやグラフ文書等に関する研究発表の募集</h3>
-                    <p>人工知能学会 第2回パーソナルAI研究会を、<a href="https://mydatajapan.org/events/mydata-japan-2025/">MyData Japanカンファレンス2025</a>の一部として開催します。
-                    本研究会では、<a href="#about" style="color: #005CAF; font-weight: bold;">下記の概要</a>で述べているパーソナルAI（PAI）や、グラフ文書（GD）による社会問題解決の構想などについて、その具現化や批判や拡張や改善に関する研究発表を募集します。
+                    <h3 style="color: #005CAF; margin-top: 0;">開催のご案内</h3>
+                    <p>人工知能学会 第2回パーソナルAI研究会を、<a href="https://mydatajapan.org/events/mydata-japan-2025/">MyData Japanカンファレンス2025</a>の一部として開催いたします。
+                    本研究会では、<a href="#about" style="color: #005CAF; font-weight: bold;">下記の概要</a>で述べているパーソナルAI（PAI）や、グラフ文書（GD）による社会問題解決の構想などについて発表いたします。
                     なお、本研究会は理研AIP分散型ビッグデータチームの成果報告会を兼ねています。</p>
                     
                     <dl style="margin-top: 1.5rem;">
                         <dt>開催日</dt>
                         <dd>2025年7月17日(木)</dd>
-
                         <dt>会場</dt>
                         <dd>一橋大学一橋講堂（オンライン参加も可能）</dd>
-                        
                         <dt>参加費</dt>
                         <dd>無料（本研究会の参加費は無料ですが、MyData Japanカンファレンス2025の他のセッションに参加するには入場料が必要です）</dd>
-
-                        <dt>発表申込</dt>
-                        <dd><a href="https://www.ai-gakkai.or.jp/sig-system/sigusers/presenter_add/pai/002">発表申込フォーム</a></dd>
-                        <dt>発表申込締切</dt>
-                        <dd>2025年7月4日</dd>
-                        <dt>原稿締切</dt>
-                        <dd>2025年7月11日</dd>
-                        
                         <dt>参加申込</dt>
-                        <dd><a href="https://docs.google.com/forms/d/e/1FAIpQLSdQXqeZ5K8AUYrFmDSiBD6y7V44n6x_tXonYuKyugmZa4Bc4g/viewform?usp=sharing&ouid=115266601781757532789">参加申込フォーム</a></dd>
-                        
+                        <dd><a href="https://docs.google.com/forms/d/e/1FAIpQLSdQXqeZ5K8AUYrFmDSiBD6y7V44n6x_tXonYuKyugmZa4Bc4g/viewform?usp=sharing&ouid=115266601781757532789">参加申込フォーム</a>（現地参加・オンライン参加の選択可能）</dd>
                         <dt>対象</dt>
                         <dd>パーソナルAIやグラフ文書に興味をお持ちの方どなたでも</dd>
-                        
-                        <dt>発表時間</dt>
-                        <dd>質疑を含めて15分</dd>
-                        
-                        <dt>推奨事項</dt>
-                        <dd>グラフ文書に関する発表にはグラフ文書の使用を推奨</dd>  
-                        
                         <dt>お問い合わせ</dt>
                         <dd>sigpai@googlegroups.com</dd>
                     </dl>
+                    
+                    <div class="zoom-info">
+                        <h4>オンライン参加について</h4><p>
+                        <strong>Zoom URL:</strong> <a href="https://riken-jp.zoom.us/j/99411619212?pwd=nRyQKeS0SMlmw1FkedXfAc7aSRC2L8.1">https://riken-jp.zoom.us/j/99411619212?pwd=nRyQKeS0SMlmw1FkedXfAc7aSRC2L8.1</a><br />
+                        <strong>ミーティング ID:</strong> 994 1161 9212<br />
+                        <strong>パスコード:</strong> ARHym2ewH8</p>
+                    </div>
+
+                    <div class="program-section">
+                        <h3>プログラム</h3>
+                        <p><strong>会場:</strong> 一橋講堂会議室201～203</p>
+                        
+                        <table class="program-table">
+                            <thead>
+                                <tr>
+                                    <th>時間</th>
+                                    <th>発表者</th>
+                                    <th>タイトル</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>14:30-14:35</td>
+                                    <td>-</td>
+                                    <td>開会の辞</td>
+                                </tr>
+                                <tr>
+                                    <td>14:35-15:05</td>
+                                    <td>橋田 浩一</td>
+                                    <td>パーソナルAIとグラフ文書</td>
+                                </tr>
+                                <tr>
+                                    <td>15:05-15:35</td>
+                                    <td>山本 龍彦</td>
+                                    <td>なぜパーソナルAIが必要なのか？― 憲法の視点から考える</td>
+                                </tr>
+                                <tr>
+                                    <td>15:35-16:05</td>
+                                    <td>栗原 聡</td>
+                                    <td>BuddyAIがいる世界へ</td>
+                                </tr>
+                                <tr>
+                                    <td>16:15-16:30</td>
+                                    <td>村松 沙那恵</td>
+                                    <td>パーソナルAIに向けたマルチデバイスRAGの設計</td>
+                                </tr>
+                                <tr>
+                                    <td>16:30-16:45</td>
+                                    <td>村田 稔樹</td>
+                                    <td>対話とグラフ文書を組み合わせた取り組み</td>
+                                </tr>
+                                <tr>
+                                    <td>16:45-17:00</td>
+                                    <td>白松 俊</td>
+                                    <td>自己理解を促すパーソナルAIとその合意形成支援への応用可能性</td>
+                                </tr>
+                                <tr>
+                                    <td>17:00-17:15</td>
+                                    <td>開 一夫</td>
+                                    <td>分散PDSとヒューマンサイエンス</td>
+                                </tr>
+                                <tr>
+                                    <td>17:15-17:30</td>
+                                    <td>大須賀 晋</td>
+                                    <td>パーソナルAIに向けた親しみあるマルチモーダル対話AIエージェントの実用化</td>
+                                </tr>
+                                <tr>
+                                    <td>17:40-18:25</td>
+                                    <td>橋田(司会)・山本・栗原・開・白松・大須賀</td>
+                                    <td>パネルディスカッション</td>
+                                </tr>
+                                <tr>
+                                    <td>18:25-18:30</td>
+                                    <td>-</td>
+                                    <td>閉会の辞</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="about">
             <h2>概要</h2>
-            
             <h3>研究会の基本的な目的</h3>
             <p>大規模言語モデル（LLM）等の急速な普及により、AIと人間のインタラクションは新たな段階を迎えています。この技術革新の中で、個人に寄り添うパーソナルAI（PAI）の重要性が増していくと考えられます。</p>
-
             <p>PAIは小規模なLLM等を用いて実現可能な、特定個人に専属するAIであり、利用者とのマルチモーダル対話を通じていろいろなサービスを仲介します。それにより利用者のパーソナルデータが個人の手元に集約・蓄積されるので、PAIはそのデータを最大限に活用して大きな価値を生み出すと期待されます。</p>
-
+            
             <h3>情報障害への対処とPAIの役割</h3>
             <p>本研究会は、パーソナルAI（PAI）とグラフ文書（GD）で個人をエンパワーすることによりさまざまな社会問題の解決を目指しています。特に、偽誤情報やエコーチェンバーやダークパターン等の情報障害（information disorder）が人間の判断を歪め民主主義の根幹を揺るがしている問題はきわめて重大であり、それを解消するためPAIとGDの普及が急務と考えています。</p>
-
             <p>PAIとは各利用者に専属するAIエージェントであり、利用者と対話してそのニーズを満たすサービスを仲介（検索・実行）します。適正にリスク管理されたPAIが普及すれば、フェイクニュースやダークパターンによる不正な行動操作をなくし、注意経済と監視資本主義を終わらせられるでしょう。</p>
-
             <p>まず、サービス仲介における検索があらゆる商品やサービスに及べばオンライン広告が不要になり、フェイクニュースやエコーチェンバーは広告に注意を引くという商業的価値を失います。また、サービス実行時のユーザインタフェースをPAIが提供すれば、サービス提供者が仕掛けるダークパターンも無効になります。</p>
-
+            
             <h3>グラフ文書と批判的思考力の向上</h3>
             <p>しかし、情報障害の商業利用がなくなっても情報障害が消えるわけではなく、デマやヘイトスピーチが人々の判断を歪めることがあり得ます。そのリスクを管理するには人間の批判的思考力の向上が必須であり、それにはグラフ文書の共同作成（共同セマンティックオーサリング；共同SA）を普及させるのが最善だとわれわれは考えています。それは、共同SAがテキスト文書の共同作成より簡単であり、かつ共同SAによって余分なコストをかけずに人間の批判的思考力を高めることができるからです。</p>
-
             <p>PAIとの複雑なマルチモーダル対話はラベル付有向グラフの形のグラフ文書の共同作成になると考えられます。本研究会では、PAIのユースケースやガバナンスの検討、グラフ文書に基づく利用者インタフェースの研究、一般市民も参加可能なグラフ文書作成ワークショップなどを通じて、この新しい技術の健全な発展と普及に貢献します。</p>
         </section>
 
@@ -229,10 +323,8 @@
             <div class="member-list-simple">
                 <h3>主査</h3>
                 <p>橋田 浩一（理化学研究所）</p>
-
                 <h3>主幹事</h3>
                 <p>白松 俊（名古屋工業大学）</p>
-
                 <h3>幹事</h3>
                 <p>門倉 悠真（東芝）<br>
                 松原 勇介（理化学研究所）<br>
@@ -249,21 +341,16 @@
             <h2>過去の開催</h2>
             <div class="announcement">
                 <h2>第1回 パーソナルAI研究会（終了）</h2>
-                
                 <div class="event-details">
                     <dl>
                         <dt>日時</dt>
                         <dd>2025年1月20日(月) 15:00～17:00</dd>
-
                         <dt>内容</dt>
                         <dd>主査がパーソナルAIとグラフ文書および本研究会の趣旨について説明し、他の関係者が関連研究を紹介しました。</dd>
-                        
                         <dt>開催形式</dt>
                         <dd>オンライン開催（Zoom）</dd>
-                        
                         <dt>参加費</dt>
                         <dd>無料</dd>
-                        
                         <dt>対象</dt>
                         <dd>パーソナルAIとグラフ文書に興味をお持ちの方どなたでも</dd>
                     </dl>
